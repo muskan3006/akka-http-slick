@@ -22,9 +22,8 @@ object EmployeeRoute extends JsonSupport {
         concat(
           get {
             val employees = EmployeeRegistry.get
-            onSuccess(employees) {
-              case res => complete(Employees(res.toList))
-              case _ => complete(StatusCodes.NotFound)
+            onSuccess(employees) {employee:Seq[Employee] => val emp = Employees(employee.toList)
+              complete(emp)
             }
           },
           post {
@@ -40,9 +39,8 @@ object EmployeeRoute extends JsonSupport {
         concat(
           get {
             val employee = EmployeeRegistry.getEmployeeById(id.toInt)
-            onSuccess(employee) {
-              case res => complete(Employees(res.toList))
-              case _ => complete(StatusCodes.NotFound)
+            onSuccess(employee) { employee:Seq[Employee] => val emp = Employees(employee.toList)
+                complete(emp)
             }
           },
           delete {
@@ -77,22 +75,3 @@ object EmployeeRoute extends JsonSupport {
   }
 }
 
-//          //      get{
-//          //          val employees = EmployeeRegistry.get
-//          //          onSuccess(employees){
-//          //            case res: Seq[Employee] => complete(Employees(res.toList))
-//          //            case _ => complete(StatusCodes.NotFound)
-//          //          }
-//          //      },
-//          //      post {
-//          //        path("addEmployee") {
-//          //          entity(as[Employee]) { employee =>
-//          //            val newEmployee = EmployeeRegistry.insert(employee)
-//          //            onSuccess(newEmployee) { _ => complete(StatusCodes.OK,"Employee Added") }
-//          //          }
-//          //        }
-//          //      },
-//          ,
-//          put {
-//            parameters("id", "name", "salary", "designation")
-//

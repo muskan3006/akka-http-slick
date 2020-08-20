@@ -23,11 +23,6 @@ object EmployeeRegistry extends TableQuery(new EmployeeSchema(_)) {
   val db = Database.forConfig("mydb")
 
   def createTable: Future[Unit] = {
-    //   val query = MTable.getTables map (tables => {
-    //      if (!tables.exists(_.name.name == this.baseTableRow.tableName))
-    //        this.schema.create
-    //      else ""
-    //    })
     val query = TableQuery[EmployeeSchema].schema.createIfNotExists
     db.run(query)
 
@@ -54,7 +49,8 @@ object EmployeeRegistry extends TableQuery(new EmployeeSchema(_)) {
   }
 
   def update(employeeId: Int, newSalary: Double, name: String): Future[Int] = {
-    val query = this.filter(_.employeeId === employeeId).map(employee => (employee.salary, employee.name)).update(newSalary, name)
+    val query = this.filter(_.employeeId === employeeId).map(employee =>
+      (employee.salary, employee.name)).update(newSalary, name)
     db.run(query)
   }
 }
