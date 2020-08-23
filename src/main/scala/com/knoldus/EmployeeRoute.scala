@@ -5,7 +5,6 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
 import com.knoldus.model.{Employee, Employees}
 
 import scala.concurrent.ExecutionContextExecutor
@@ -14,7 +13,7 @@ import scala.util.{Failure, Success}
 
 object EmployeeRoute extends JsonSupport {
   implicit val system: ActorSystem = ActorSystem()
-  implicit val materializer: ActorMaterializer.type = ActorMaterializer
+  //  implicit val materializer: ActorMaterializer.type = ActorMaterializer
   implicit val executionContext: ExecutionContextExecutor = system.dispatcher
   val route: Route = pathPrefix("employee") {
     concat(
@@ -22,7 +21,8 @@ object EmployeeRoute extends JsonSupport {
         concat(
           get {
             val employees = EmployeeRegistry.get
-            onSuccess(employees) {employee:Seq[Employee] => val emp = Employees(employee.toList)
+            onSuccess(employees) { employee: Seq[Employee] =>
+              val emp = Employees(employee.toList)
               complete(emp)
             }
           },
@@ -39,8 +39,9 @@ object EmployeeRoute extends JsonSupport {
         concat(
           get {
             val employee = EmployeeRegistry.getEmployeeById(id.toInt)
-            onSuccess(employee) { employee:Seq[Employee] => val emp = Employees(employee.toList)
-                complete(emp)
+            onSuccess(employee) { employee: Seq[Employee] =>
+              val emp = Employees(employee.toList)
+              complete(emp)
             }
           },
           delete {
@@ -50,8 +51,8 @@ object EmployeeRoute extends JsonSupport {
             }
           },
           put {
-            parameters("salary".as[Int],"name"){(salary,name)=>
-              val updated = EmployeeRegistry.update(id.toInt, salary,name)
+            parameters("salary".as[Int], "name") { (salary, name) =>
+              val updated = EmployeeRegistry.update(id.toInt, salary, name)
               onSuccess(updated) { _ =>
                 complete(StatusCodes.OK, "Updated")
               }
